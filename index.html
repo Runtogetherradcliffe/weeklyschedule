@@ -4,45 +4,99 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Run Club Schedule</title>
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
   <style>
-    body { font-family: system-ui, Segoe UI, Roboto, Arial; margin: 24px; }
-    h1 { text-align: center; }
-    #calendar { max-width: 900px; margin: auto; }
-    .fc-event-title { font-weight: bold; }
-    .fc-event-time { display: none; } /* hide times if not needed */
+    :root { --card-shadow: 0 6px 24px rgba(0,0,0,.06); --border:#e6e6e6; }
+    body { font-family: system-ui, Segoe UI, Roboto, Arial; margin: 24px; background:#fafafa; }
+    h1 { text-align: center; margin-bottom: 16px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    .event { background:#fff; border:1px solid var(--border); border-radius:16px; padding:16px; margin:12px 0; box-shadow: var(--card-shadow); }
+    .when { font-weight:600; margin-bottom:6px; }
+    .title { font-size:1.1rem; font-weight:700; margin:2px 0 8px; }
+    .loc { color:#555; margin-bottom:10px; }
+    .desc { color:#333; }
+    .empty { text-align:center; color:#666; margin-top:32px; }
   </style>
 </head>
 <body>
-  <h1>Upcoming Runs</h1>
-  <div id="calendar"></div>
+  <div class="container">
+    <h1>Upcoming Runs</h1>
+    <div id="events"></div>
+  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const calEl = document.getElementById('calendar');
-      const calendar = new FullCalendar.Calendar(calEl, {
-        initialView: 'listWeek',   // schedule style list
-        timeZone: 'Europe/London',
-        headerToolbar: { left: '', center: '', right: '' },
-        events: {
-          url: 'https://calendar.google.com/calendar/ical/1e8d26a3b27472c802fdf9e914db1577e4eddae7cbf3b1f6a4f30984626bc7df%40group.calendar.google.com/public/basic.ics',   // <-- paste the "Public address in iCal format"
-          format: 'ics'
-        },
-        eventDidMount: function(info) {
-          // Add description/details below title if present
-          if (info.event.extendedProps.description) {
-            let desc = document.createElement('div');
-            desc.style.fontSize = '0.9em';
-            desc.style.color = '#555';
-            desc.innerHTML = info.event.extendedProps.description;
-            info.el.querySelector('.fc-event-title').appendChild(desc);
-          }
-        }
-      });
-      calendar.render();
+    const API_KEY = "AIzaSyDB1r63s-fuhgk5ssZ7AyCCbGsUuio3lrI"; // <-- put your browser-restricted key here
+    const calendarId = "1e8d26a3b27472c802fdf9e914db1577e4eddae7cbf3b1f6a4f30984626bc7df@group.calendar.google.com";
+
+    const timeMin = new Date().toISOString();
+    const maxResults = 50; // tweak as you like
+
+    const url = new URL("https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(calendarId) + "/events");
+    url.search = new URLSearchParams({
+      key: API_KEY,
+      timeMin,
+      singleEvents: "true",
+      orderBy: "startTime",
+      maxResults: String(maxResults)
     });
+
+    function fmtDateRange(ev) {
+      const tz = "Europe/London";
+      const optDate = { weekday:"short", day:"2-digit", month:"short", year:"numeric", timeZone: tz };
+      const optTime = { hour:"2-digit", minute:"2-digit", hour12:false, timeZone: tz };
+
+      const start = ev.start.dateTime ? new Date(ev.start.dateTime) : new Date(ev.start.date);
+      const end   = ev.end.dateTime   ? new Date(ev.end.dateTime)   : new Date(ev.end.date);
+
+      const allDay = !!ev.start.date && !ev.start.dateTime;
+
+      if (allDay) {
+        return start.toLocaleDateString("en-GB", optDate) + " (all day)";
+      } else {
+        const sameDay = start.toDateString() === end.toDateString();
+        const d = start.toLocaleDateString("en-GB", optDate);
+        const s = start.toLocaleTimeString("en-GB", optTime);
+        const e = end.toLocaleTimeString("en-GB", optTime);
+        return sameDay ? `${d} • ${s}–${e}` :
+          `${d} ${s} → ${end.toLocaleDateString("en-GB", optDate)} ${e}`;
+      }
+    }
+
+    // lightly sanitize description (allow links/linebreaks)
+    function renderDescription(html) {
+      if (!html) return "";
+      const div = document.createElement("div");
+      div.innerHTML = html;
+      // Convert plain URLs to links if the description is plain text
+      div.innerHTML = div.innerHTML.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+      return div.innerHTML;
+    }
+
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        const holder = document.getElementById("events");
+        if (!data.items || !data.items.length) {
+          holder.innerHTML = '<div class="empty">No upcoming events.</div>';
+          return;
+        }
+        holder.innerHTML = data.items.map(ev => {
+          const when = fmtDateRange(ev);
+          const title = ev.summary || "Untitled event";
+          const loc = ev.location ? `<div class="loc">${ev.location}</div>` : "";
+          const desc = ev.description ? `<div class="desc">${renderDescription(ev.description)}</div>` : "";
+          return `<div class="event">
+            <div class="when">${when}</div>
+            <div class="title">${title}</div>
+            ${loc}
+            ${desc}
+          </div>`;
+        }).join("");
+      })
+      .catch(err => {
+        document.getElementById("events").innerHTML =
+          '<div class="empty">Couldn’t load events. Check API key permissions and that the calendar is public.</div>';
+        console.error(err);
+      });
   </script>
 </body>
 </html>
