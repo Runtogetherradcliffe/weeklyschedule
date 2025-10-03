@@ -1,0 +1,43 @@
+name: Update Strava Routes Cache
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "12 3 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          python -m pip install --upgrade pip
+          echo "requests>=2.28.0" > requirements.txt
+          pip install -r requirements.txt
+      - name: Fetch Strava + build cache
+        env:
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+        run: |
+          mkdir -p scripts routes
+          curl -L https://raw.githubusercontent.com/your-local-path-placeholder/main/scripts/strava_cache.py -o scripts/strava_cache.py || true
+          # If the above curl can’t find the script, make sure you’ve added it from the ZIP at scripts/strava_cache.py
+          python scripts/strava_cache.py
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "chore: update Strava routes cache [skip ci]"
+            git push
+          fi
