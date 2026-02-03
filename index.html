@@ -1,72 +1,140 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RunTogether Radcliffe – Weekly Schedule</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif;
-      background: #fafafa;
-      color: #333;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    header {
-      background: #800000; /* deep maroon club colour */
-      color: white;
-      padding: 1rem;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      flex-shrink: 0;
-    }
-    header img {
-      height: 48px;
-      vertical-align: middle;
-      margin-right: 12px;
-    }
-    header h1 {
-      display: inline-block;
-      font-size: 1.4rem;
-      margin: 0;
-      vertical-align: middle;
-    }
-    iframe {
-      border: 0;
-      width: 100%;
-      flex-grow: 1;
-    }
-    footer {
-      background: #f2f2f2;
-      color: #555;
-      text-align: center;
-      padding: 0.5rem;
-      font-size: 0.9rem;
-      flex-shrink: 0;
-      border-top: 1px solid #ddd;
-    }
-    footer a {
-      color: #800000;
-      text-decoration: none;
-      margin: 0 6px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Schedule | Run Together Radcliffe</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #222;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        .back-link {
+            color: #f5a623;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #ffc966;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .iframe-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #fff;
+        }
+
+        footer {
+            background: #111;
+            border-top: 1px solid #222;
+            padding: 1rem 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        footer a {
+            color: #f5a623;
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+
+        footer a:hover {
+            color: #ffc966;
+        }
+
+        footer span {
+            color: #444;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            h1 {
+                font-size: 1.1rem;
+            }
+
+            footer {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <!-- Optional: place a logo file (e.g. logo.png) in your repo and uncomment below -->
-    <!-- <img src="logo.png" alt="RunTogether Radcliffe logo"> -->
-    <h1>RunTogether Radcliffe – Weekly Schedule</h1>
-  </header>
+    <header>
+        <a href="index.html" class="back-link">← Back to main page</a>
+        <div class="header-content">
+            <img src="logo.png" alt="RTR" class="logo" onerror="this.style.display='none'">
+            <h1>Weekly Schedule</h1>
+        </div>
+    </header>
 
-  <iframe src="https://script.google.com/macros/s/AKfycbzbg35w3CTWDNQ5u_wAUJXChL2oqEmOgMrfQcIqtxVIz1vmWtwZOoNiUrB-H6e0_bqg7A/exec"></iframe>
+    <div class="iframe-container">
+        <iframe src="https://script.google.com/macros/s/AKfycbzbg35w3CTWDNQ5u_wAUJXChL2oqEmOgMrfQcIqtxVIz1vmWtwZOoNiUrB-H6e0_bqg7A/exec" title="Weekly Schedule"></iframe>
+    </div>
 
-  <footer>
-    <span>© RunTogether Radcliffe</span> • 
-    <a href="https://www.facebook.com/runtogetherradcliffe/" target="_blank">Facebook</a> • 
-    <a href="https://www.strava.com/clubs/runtogetherradcliffe" target="_blank">Strava</a>
-  </footer>
+    <footer>
+        <a href="index.html">Run Together Radcliffe</a>
+        <span>•</span>
+        <a href="https://www.facebook.com/runtogetherradcliffe/" target="_blank" rel="noopener">Facebook</a>
+        <span>•</span>
+        <a href="https://www.strava.com/clubs/runtogetherradcliffe" target="_blank" rel="noopener">Strava</a>
+    </footer>
 </body>
 </html>
